@@ -95,7 +95,10 @@ export default function Home() {
   const snapshot = cursor > 0 ? sim.snapshots[cursor] : null;
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col mc-dirt p-3">
+    <div
+      className="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col mc-dirt p-3"
+      style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)), url(${tex("dirt.png")})` }}
+    >
       {/* Header */}
       <div className="mc-panel shrink-0 px-4 py-2 mb-3 flex flex-wrap items-center gap-3">
         <img src={tex("uranium_quad_cell.png")} alt="" className="w-8 h-8 pixelated" />
@@ -162,11 +165,14 @@ export default function Home() {
               <span>Output: {snapshot.eu} EU/t</span>
             </div>
           )}
+
+          <div className="w-full">
+            <StatsPanel sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
+          </div>
         </div>
 
         {/* Right column */}
         <div className="flex flex-col gap-3 w-full lg:w-80 shrink-0 lg:h-full lg:overflow-y-auto overflow-x-hidden">
-          <StatsPanel sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
           <AutoDesigner data={DATA} grid={grid} chambers={chambers} apply={apply} />
           <ShareCode grid={grid} chambers={chambers} apply={apply} />
         </div>

@@ -24,7 +24,10 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <div className="min-h-screen mc-dirt p-3">
+    <div
+      className="min-h-screen mc-dirt p-3"
+      style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)), url(${tex("dirt.png")})` }}
+    >
       <div className="mc-panel px-4 py-2 mb-3 flex flex-wrap items-center gap-3">
         <img src={tex("iridium_neutron_reflector.png")} alt="" className="w-8 h-8 pixelated" />
         <h1 className="text-3xl text-[#2a2a2a] leading-none">Global Leaderboard</h1>

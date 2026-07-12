@@ -15,7 +15,7 @@ export default function AutoDesigner({ data, grid, chambers, apply }) {
   const fuel = data.components[fuelId];
 
   const build = () => {
-    const result = design(fuelId, count, mode, data, goal);
+    const result = design(fuelId, count, mode, data, goal, false, chambers);
     setNote(describe(result, fuelId, count, data));
     if (result) apply(result.grid, result.chambers);
   };
@@ -31,7 +31,7 @@ export default function AutoDesigner({ data, grid, chambers, apply }) {
     setCount(p.count);
     setMode(p.mode);
     setGoal(p.goal);
-    const result = design(p.fuelId, p.count, p.mode, data, p.goal, p.armored);
+    const result = design(p.fuelId, p.count, p.mode, data, p.goal, p.armored, chambers);
     setNote(describe(result, p.fuelId, p.count, data));
     if (result) apply(result.grid, result.chambers);
   };

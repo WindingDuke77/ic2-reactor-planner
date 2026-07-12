@@ -18,7 +18,7 @@ function StatsPanel({ sim, maxHeat, cells }) {
         : { text: "STABLE - full cycle, nothing lost", cls: "bg-[#103f10] text-[#55ff55] border-[#55ff55]" };
 
   return (
-    <div className="mc-panel p-3 w-full lg:w-80 shrink-0">
+    <div className="mc-panel p-3 w-full">
       <h2 className="text-xl text-[#404040] mb-2">Simulation</h2>
 
       <div className={`border-2 px-2 py-1 mb-3 text-lg leading-tight ${verdict.cls}`}>{verdict.text}</div>

@@ -19,9 +19,14 @@ const KITS = [
 
 const GOALS = { eu: "most EU/t", total: "most total EU", efficiency: "best efficiency" };
 
-export function design(fuelId, count, mode, data, goal = "eu", armored = false) {
+export function design(fuelId, count, mode, data, goal = "eu", armored = false, lockedChambers = null) {
   const fuel = data.components[fuelId];
   if (!fuel || fuel.type !== "fuel" || count < 1) return null;
+
+  // When the player has picked a reactor size, keep it - no surprise resizes
+  const chamberRange = lockedChambers === null
+    ? range(0, data.config.maxChambers)
+    : [Math.max(0, Math.min(data.config.maxChambers, lockedChambers))];
 
   // Per-vent load if the cell dumps its heat over 4 sides - lets us skip
   // kits that could never keep up instead of simulating them
@@ -30,7 +35,7 @@ export function design(fuelId, count, mode, data, goal = "eu", armored = false) 
 
   let bestFail = null;
 
-  for (let chambers = 0; chambers <= data.config.maxChambers; chambers++) {
+  for (const chambers of chamberRange) {
     const width = data.config.baseColumns + chambers;
     const positions = placeCells(count, width, mode, fuel.pulseArea === "all8");
     if (!positions) continue;
@@ -80,7 +85,7 @@ function armor(candidate, data) {
 }
 
 export function describe(result, fuelId, count, data) {
-  if (!result) return "Could not fit that many cells in a reactor. Fewer cells, chief.";
+  if (!result) return "Could not fit that many cells at this reactor size. Add chambers or drop some cells.";
   const fuel = data.components[fuelId];
   const verdict = result.stable
     ? `Stable for a full ${fuel.durability}s cycle.`
@@ -188,6 +193,12 @@ function placeCells(count, width, mode, diagonalsMatter) {
 
 function interior([x, y], width) {
   return x > 0 && x < width - 1 && y > 0 && y < 5;
+}
+
+function range(from, to) {
+  const out = [];
+  for (let n = from; n <= to; n++) out.push(n);
+  return out;
 }
 
 function buildLayout(positions, fuelId, kit, width) {
