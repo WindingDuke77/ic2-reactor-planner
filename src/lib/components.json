@@ -40,10 +40,10 @@
     "advanced_heat_vent": { "name": "Advanced Heat Vent", "category": "Heat Vents", "texture": "advanced_heat_vent.png", "type": "vent", "selfVent": 12, "hullDraw": 0, "capacity": 1000, "electric": false },
     "component_heat_vent": { "name": "Component Heat Vent", "category": "Heat Vents", "texture": "component_heat_vent.png", "type": "ventSpread", "cooling": 4 },
 
-    "steam_vent": { "name": "Steam Vent", "category": "Steam Vents", "texture": "steam_vent.png", "type": "vent", "selfVent": 6, "hullDraw": 0, "capacity": 1100, "electric": false },
-    "reactor_steam_vent": { "name": "Reactor Steam Vent", "category": "Steam Vents", "texture": "reactor_steam_vent.png", "type": "vent", "selfVent": 5, "hullDraw": 5, "capacity": 1100, "electric": false },
-    "overclocked_steam_vent": { "name": "Overclocked Steam Vent", "category": "Steam Vents", "texture": "overclocked_steam_vent.png", "type": "vent", "selfVent": 20, "hullDraw": 36, "capacity": 1100, "electric": false },
-    "advanced_steam_vent": { "name": "Advanced Steam Vent", "category": "Steam Vents", "texture": "advanced_steam_vent.png", "type": "vent", "selfVent": 12, "hullDraw": 0, "capacity": 1100, "electric": false },
+    "steam_vent": { "name": "Steam Vent", "category": "Steam Vents", "texture": "steam_vent.png", "type": "vent", "selfVent": 6, "hullDraw": 0, "capacity": 1100, "electric": false, "steam": true },
+    "reactor_steam_vent": { "name": "Reactor Steam Vent", "category": "Steam Vents", "texture": "reactor_steam_vent.png", "type": "vent", "selfVent": 5, "hullDraw": 5, "capacity": 1100, "electric": false, "steam": true },
+    "overclocked_steam_vent": { "name": "Overclocked Steam Vent", "category": "Steam Vents", "texture": "overclocked_steam_vent.png", "type": "vent", "selfVent": 20, "hullDraw": 36, "capacity": 1100, "electric": false, "steam": true },
+    "advanced_steam_vent": { "name": "Advanced Steam Vent", "category": "Steam Vents", "texture": "advanced_steam_vent.png", "type": "vent", "selfVent": 12, "hullDraw": 0, "capacity": 1100, "electric": false, "steam": true },
 
     "electric_heat_vent": { "name": "Electric Heat Vent", "category": "Electric Vents", "texture": "electric_heat_vent.png", "type": "vent", "selfVent": 12, "hullDraw": 0, "capacity": 10000, "electric": true },
     "electric_reactor_heat_vent": { "name": "Electric Reactor Heat Vent", "category": "Electric Vents", "texture": "electric_reactor_heat_vent.png", "type": "vent", "selfVent": 10, "hullDraw": 10, "capacity": 10000, "electric": true },

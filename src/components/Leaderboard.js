@@ -4,18 +4,27 @@ import { useEffect, useState } from "react";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const REPO = "https://github.com/WindingDuke77/ic2-reactor-planner";
+// The repo IS the database: raw.githubusercontent serves the freshest board
+// the moment the robot commits an entry - no redeploy needed. The bundled
+// copy is only a fallback for when GitHub raw is unreachable.
+const DB = "https://raw.githubusercontent.com/WindingDuke77/ic2-reactor-planner/master/public/leaderboard.json";
 
 export default function Leaderboard({ data, grid, chambers, sim, apply }) {
   const [entries, setEntries] = useState(null);
   const [offline, setOffline] = useState(false);
 
-  // The board is a plain JSON file next to the site - a GitHub Action keeps it fresh
   useEffect(() => {
     let alive = true;
-    fetch(`${BASE}/leaderboard.json`)
+    const accept = (json) => { if (alive) setEntries(Array.isArray(json.entries) ? json.entries : []); };
+    fetch(`${DB}?t=${Date.now()}`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((json) => { if (alive) setEntries(Array.isArray(json.entries) ? json.entries : []); })
-      .catch(() => { if (alive) setOffline(true); });
+      .then(accept)
+      .catch(() =>
+        fetch(`${BASE}/leaderboard.json`)
+          .then((r) => (r.ok ? r.json() : Promise.reject()))
+          .then(accept)
+          .catch(() => { if (alive) setOffline(true); })
+      );
     return () => { alive = false; };
   }, []);
 

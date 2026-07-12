@@ -137,6 +137,149 @@ export function improve(grid, chambers, goal, data) {
   return { grid: best.grid, chambers, sim: best.sim, note: `${best.note}: ${improvement(goal, base, best.sim)}`, changed: true };
 }
 
+// Run improve() rounds until the hill-climb runs dry (or 25 rounds). The
+// await between rounds lets React repaint the progress note mid-run.
+export async function improveLoop(grid, chambers, goal, data, onProgress) {
+  const startSim = simulate(grid, chambers, data);
+  let curGrid = grid;
+  let curSim = startSim;
+  let rounds = 0;
+  let stuckNote = "";
+
+  for (let i = 0; i < 25; i++) {
+    const step = improve(curGrid, chambers, goal, data);
+    if (!step.changed) {
+      stuckNote = step.note;
+      break;
+    }
+    rounds++;
+    curGrid = step.grid;
+    curSim = step.sim;
+    if (onProgress) onProgress(`Round ${rounds}: ${step.note}`);
+    await new Promise((r) => setTimeout(r));
+  }
+
+  if (!rounds) {
+    return { grid, chambers, sim: startSim, note: stuckNote, changed: false };
+  }
+  const net = improvement(goal, startSim, curSim);
+  return { grid: curGrid, chambers, sim: curSim, note: `${rounds} round${rounds === 1 ? "" : "s"} applied: ${net}.`, changed: true };
+}
+
+const OPTIMIZE_CAP = 1000; // total design() attempts per optimize run
+const COMBO_CAP = 16; // attempts per fuel x mode so one dud can't eat the budget
+
+// Global search: every fuel in the pack x cell counts x both layouts, all at
+// the player's locked reactor size, then a full hill-climb polish on the
+// winner. Strongest fuels go first so the budget lands where winners live.
+export async function optimize(chambers, goal, data, onProgress) {
+  const width = data.config.baseColumns + chambers;
+  const say = (msg) => { if (onProgress) onProgress(msg); };
+
+  const fuels = Object.entries(data.components)
+    .filter(([, def]) => def.type === "fuel")
+    .sort((a, b) => fuelPower(b[1]) - fuelPower(a[1]));
+
+  let calls = 0;
+  let best = null;
+  let bestFail = null;
+
+  const attempt = (fuelId, fuel, count, mode) => {
+    calls++;
+    say(`Trying ${count}x ${fuel.name}${mode === "paired" ? " (paired)" : ""}...`);
+    const r = design(fuelId, count, mode, data, goal, false, chambers);
+    if (!r) return null;
+    const entry = { ...r, fuelId, count, mode };
+    if (r.stable) {
+      if (!best || goalScore(r.sim, goal, count) > goalScore(best.sim, goal, best.count)) best = entry;
+    } else if (!bestFail || score(r.sim) > score(bestFail.sim)) {
+      bestFail = entry;
+    }
+    return entry;
+  };
+
+  for (const [fuelId, fuel] of fuels) {
+    if (calls >= OPTIMIZE_CAP) break;
+
+    for (const mode of ["spread", "paired"]) {
+      let maxFit = 0;
+      for (let n = 24; n >= 1; n--) {
+        if (placeCells(n, width, mode, fuel.pulseArea === "all8")) {
+          maxFit = n;
+          break;
+        }
+      }
+      if (!maxFit) continue;
+
+      let budget = COMBO_CAP;
+      const tried = new Map();
+      const probe = (count) => {
+        if (tried.has(count)) return tried.get(count);
+        if (!budget || calls >= OPTIMIZE_CAP) return null;
+        budget--;
+        const r = attempt(fuelId, fuel, count, mode);
+        tried.set(count, r);
+        return r;
+      };
+
+      if (goal === "efficiency") {
+        // Fewer cells means more cooling and reflectors per cell, so climb
+        // from the bottom and stop once the stable picks stop coming
+        let stableHits = 0;
+        for (let count = 1; count <= maxFit && stableHits < 3; count++) {
+          const r = probe(count);
+          if (!r) break;
+          if (r.stable) stableHits++;
+        }
+      } else {
+        // Coarse descent first - unstable attempts explode early and cost
+        // little - then refine back up to the biggest load that holds
+        let firstStable = null;
+        let lowestUnstable = maxFit + 1;
+        for (let n = maxFit; n >= 1; n = n === 1 ? 0 : Math.max(1, Math.floor(n * 0.6))) {
+          const r = probe(n);
+          if (!r) break;
+          if (r.stable) {
+            firstStable = n;
+            break;
+          }
+          lowestUnstable = n;
+        }
+        if (firstStable !== null) {
+          for (let n = firstStable + 1; n < lowestUnstable; n++) {
+            const r = probe(n);
+            if (!r || !r.stable) break;
+          }
+        }
+      }
+    }
+
+    // Let the UI breathe between fuels
+    await new Promise((r) => setTimeout(r));
+  }
+
+  if (!best) {
+    if (!bestFail) {
+      return { grid: Array(54).fill(null), chambers, sim: null, note: "No fuel fits at this reactor size at all.", fuelId: null, count: 0 };
+    }
+    const fuel = data.components[bestFail.fuelId];
+    return {
+      grid: bestFail.grid,
+      chambers,
+      sim: bestFail.sim,
+      note: `NOTHING STABLE at this size - least-bad attempt: ${bestFail.count}x ${fuel.name} (${bestFail.mode}), lasts ${bestFail.sim.seconds}s. Tried ${calls} combos. Add chambers.`,
+      fuelId: bestFail.fuelId,
+      count: bestFail.count,
+    };
+  }
+
+  const fuel = data.components[best.fuelId];
+  say(`Winner: ${best.count}x ${fuel.name}. Polishing...`);
+  const polished = await improveLoop(best.grid, chambers, goal, data, say);
+  const note = `Best in the pack: ${best.count}x ${fuel.name} (${best.mode}), ${best.kit}. ~${polished.sim.avgEU} EU/t, ${fmtEU(polished.sim.totalEU)} total. Tried ${calls} combos.`;
+  return { grid: polished.grid, chambers, sim: polished.sim, note, fuelId: best.fuelId, count: best.count };
+}
+
 // One-click builds. Each runs through design() so the result is still proven
 // by the simulator before it touches the grid.
 export const PRESETS = [
@@ -382,6 +525,12 @@ function nextToFuel(grid, x, y, width, data) {
 
 function centrality([x, y], width) {
   return Math.min(x, width - 1 - x) * 2 + Math.min(y, 5 - y);
+}
+
+// Raw EU/s of a lone cell - only used to rank fuels for the optimize() order
+function fuelPower(fuel) {
+  const basePulses = (1 + ((fuel.rods / 2) | 0)) * fuel.pulsesPerTick;
+  return fuel.rods * basePulses * fuel.euPerPulse;
 }
 
 // Heat/s of a lone cell (same math as the simulator's heat run)

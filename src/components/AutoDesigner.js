@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { design, describe, improve, PRESETS } from "@/lib/designer";
+import { design, describe, improveLoop, optimize, PRESETS } from "@/lib/designer";
 import { tex } from "@/lib/info";
 
 export default function AutoDesigner({ data, grid, chambers, apply }) {
@@ -10,6 +10,7 @@ export default function AutoDesigner({ data, grid, chambers, apply }) {
   const [mode, setMode] = useState("spread");
   const [goal, setGoal] = useState("eu");
   const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
 
   const fuels = Object.entries(data.components).filter(([, def]) => def.type === "fuel");
   const fuel = data.components[fuelId];
@@ -20,10 +21,32 @@ export default function AutoDesigner({ data, grid, chambers, apply }) {
     if (result) apply(result.grid, result.chambers);
   };
 
-  const iterate = () => {
-    const result = improve(grid, chambers, goal, data);
-    setNote(result.note);
-    if (result.changed) apply(result.grid, result.chambers);
+  const iterate = async () => {
+    setBusy(true);
+    try {
+      // onProgress feeds the note area live; improveLoop yields between rounds
+      const result = await improveLoop(grid, chambers, goal, data, setNote);
+      setNote(result.note);
+      if (result.changed) apply(result.grid, result.chambers);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const optimizeAll = async () => {
+    setBusy(true);
+    try {
+      const result = await optimize(chambers, goal, data, setNote);
+      setNote(result.note);
+      if (result.fuelId) {
+        // Sync the pickers so Design/Iterate carry on from the winner
+        setFuelId(result.fuelId);
+        setCount(result.count);
+      }
+      if (result.sim) apply(result.grid, result.chambers);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const pick = (p) => {
@@ -94,10 +117,13 @@ export default function AutoDesigner({ data, grid, chambers, apply }) {
         ))}
       </div>
 
-      <button onClick={build} className="mc-btn w-full py-2 text-xl">
+      <button onClick={optimizeAll} disabled={busy} className="mc-btn w-full py-2 text-xl disabled:opacity-50">
+        {busy ? "Working..." : "Best in the modpack"}
+      </button>
+      <button onClick={build} disabled={busy} className="mc-btn w-full py-2 text-xl mt-1 disabled:opacity-50">
         Design my reactor
       </button>
-      <button onClick={iterate} className="mc-btn w-full py-1 text-lg mt-1">
+      <button onClick={iterate} disabled={busy} className="mc-btn w-full py-1 text-lg mt-1 disabled:opacity-50">
         Iterate on current grid
       </button>
 

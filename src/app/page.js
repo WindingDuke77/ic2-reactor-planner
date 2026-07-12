@@ -131,9 +131,19 @@ export default function Home() {
 
         {/* Reactor + timeline */}
         <div className="flex flex-col gap-3 min-w-0 flex-1 lg:h-full lg:overflow-y-auto overflow-x-hidden">
-          <div className="w-full flex justify-center">
-            <ReactorGrid data={DATA} grid={grid} width={width} snapshot={snapshot} paint={paint} peaks={sim.slotPeaks} />
+          <div className="flex flex-row gap-5">
+
+            <StatsPanel left sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
+
+            <div className="w-full flex justify-center">
+              <ReactorGrid data={DATA} grid={grid} width={width} snapshot={snapshot} paint={paint} peaks={sim.slotPeaks} />
+            </div>
+
+            <StatsPanel right sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
+
+            
           </div>
+          
 
           <div className="mc-panel p-2 w-full flex items-center gap-2">
             <button onClick={() => setPlaying((p) => !p)} className="mc-btn w-10 py-1 text-lg">
@@ -159,16 +169,14 @@ export default function Home() {
             <HeatGraph sim={sim} cursor={cursor} scrub={(i) => { setPlaying(false); setCursor(i); }} />
           </div>
 
-          {snapshot && (
-            <div className="mc-panel px-3 py-1 text-lg text-[#2a2a2a] flex gap-4">
-              <span>Hull: {snapshot.hull} / {snapshot.maxHeat}</span>
-              <span>Output: {snapshot.eu} EU/t</span>
-            </div>
-          )}
-
-          <div className="w-full">
-            <StatsPanel sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
+        
+          <div className="mc-panel px-3 py-1 text-lg text-[#2a2a2a] flex gap-4">
+            <span>Hull: {snapshot?.hull} / {snapshot?.maxHeat}</span>
+            <span>Output: {snapshot?.eu} EU/t</span>
           </div>
+        
+
+
         </div>
 
         {/* Right column */}
