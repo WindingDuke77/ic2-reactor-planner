@@ -1,0 +1,85 @@
+# Turns "[Submission]" issues into leaderboard entries. The script re-runs the
+# real simulator, so nobody can claim numbers their reactor cannot produce.
+# Bad submissions must never fail the run - the script always exits 0 and
+# reports through submission-result.json, and the issue gets closed either way.
+name: Leaderboard Submission
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+# One submission at a time so two accepts never race the push
+concurrency:
+  group: leaderboard
+  cancel-in-progress: false
+
+jobs:
+  process:
+    if: startsWith(github.event.issue.title, '[Submission]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Issue body/title only ever reach the script through env, never the shell
+      - name: Validate submission
+        continue-on-error: true
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: node scripts/process-submission.mjs
+
+      - name: Read result
+        id: result
+        run: |
+          if [ -f submission-result.json ]; then
+            echo "accepted=$(node -p "JSON.parse(require('fs').readFileSync('submission-result.json','utf8')).accepted === true")" >> "$GITHUB_OUTPUT"
+            echo "reason=$(node -p "String(JSON.parse(require('fs').readFileSync('submission-result.json','utf8')).reason || '').replace(/[\r\n]+/g, ' ')")" >> "$GITHUB_OUTPUT"
+            echo "eut=$(node -p "Number(JSON.parse(require('fs').readFileSync('submission-result.json','utf8')).euT) || 0")" >> "$GITHUB_OUTPUT"
+          else
+            echo "accepted=false" >> "$GITHUB_OUTPUT"
+            echo "reason=The validator crashed before it could say why. A human will take a look." >> "$GITHUB_OUTPUT"
+            echo "eut=0" >> "$GITHUB_OUTPUT"
+          fi
+          rm -f submission-result.json
+
+      - name: Commit leaderboard
+        if: steps.result.outputs.accepted == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/leaderboard.json
+          git commit -m "leaderboard: add entry from issue #${{ github.event.issue.number }}"
+          git pull --rebase origin master
+          git push origin master
+
+      - name: Comment and close (accepted)
+        if: steps.result.outputs.accepted == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EUT: ${{ steps.result.outputs.eut }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --repo ${{ github.repository }} \
+            --body "Validated: ${EUT} EU/t, stable. You are on the board - the site shows it after the next deploy."
+          gh issue close ${{ github.event.issue.number }} --repo ${{ github.repository }}
+
+      - name: Comment and close (rejected)
+        if: steps.result.outputs.accepted != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REASON: ${{ steps.result.outputs.reason }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --repo ${{ github.repository }} \
+            --body "Rejected: ${REASON}"
+          gh issue close ${{ github.event.issue.number }} --repo ${{ github.repository }}

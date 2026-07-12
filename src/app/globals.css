@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+html, body {
+  padding: 0;
+  margin: 0;
+  font-family: "VT323", monospace;
+}
+
+.pixelated { image-rendering: pixelated; }
+
+/* Dirt-ish page background */
+.mc-dirt {
+  background-color: #2e2417;
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.03) 75%),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.18) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.18) 75%);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+}
+
+/* Classic light-gray GUI panel with the bevelled border */
+.mc-panel {
+  background: #c6c6c6;
+  border: 3px solid;
+  border-color: #ffffff #555555 #555555 #ffffff;
+  box-shadow: 0 0 0 3px #000;
+}
+
+/* Item slot: dark inset square */
+.mc-slot {
+  background: #8b8b8b;
+  border: 2px solid;
+  border-color: #373737 #ffffff #ffffff #373737;
+}
+.mc-slot:hover { background: #a0a0a0; }
+.mc-slot-selected {
+  background: #b5b5a0;
+  outline: 2px solid #ffff55;
+  outline-offset: -1px;
+}
+
+/* Dark inset area (event log, graph) */
+.mc-inset {
+  background: #1c1c1c;
+  border: 2px solid;
+  border-color: #373737 #ffffff #ffffff #373737;
+}
+
+/* Stone button */
+.mc-btn {
+  background: #6d6d6d;
+  border: 2px solid #000;
+  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.4), inset -2px -2px 0 rgba(0, 0, 0, 0.35);
+  color: #e0e0e0;
+  text-shadow: 2px 2px 0 #383838;
+  cursor: pointer;
+}
+.mc-btn:hover { color: #ffffa0; background: #7a7a92; }
+.mc-btn-active {
+  background: #5a7a5a;
+  color: #ffffa0;
+  box-shadow: inset -2px -2px 0 rgba(255, 255, 255, 0.4), inset 2px 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* Minecraft item tooltip */
+.mc-tooltip {
+  background: rgba(16, 0, 16, 0.94);
+  border: 2px solid #5632aa;
+  box-shadow: 0 0 0 1px rgba(16, 0, 16, 0.94);
+}
