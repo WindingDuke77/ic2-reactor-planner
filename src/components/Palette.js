@@ -1,8 +1,13 @@
 "use client";
 
+import { memo } from "react";
 import { statLines, categories, tex } from "@/lib/info";
 
-export default function Palette({ data, tool, pick }) {
+// memo: the palette is 40+ tooltip-heavy buttons that never change during
+// playback, so skip re-rendering it unless the selected tool does
+export default memo(Palette);
+
+function Palette({ data, tool, pick }) {
   return (
     <div className="mc-panel p-3 w-full lg:w-72 shrink-0">
       <h2 className="text-xl text-[#404040] mb-2">Components</h2>
@@ -29,7 +34,7 @@ export default function Palette({ data, tool, pick }) {
                 <img src={tex(def.texture)} alt={def.name} className="w-8 h-8 pixelated" draggable={false} />
 
                 {/* Minecraft-style hover tooltip */}
-                <div className="mc-tooltip hidden group-hover:block absolute left-8 top-8 z-50 w-56 p-2 text-left pointer-events-none">
+                <div className="mc-tooltip hidden group-hover:block absolute left-1/2 -translate-x-1/2 top-10 z-50 w-56 p-2 text-left pointer-events-none">
                   <p className="text-white text-lg leading-tight">{def.name}</p>
                   {statLines(def, data.config).map((line) => (
                     <p key={line} className="text-[#a8a8a8] text-base leading-tight">{line}</p>

@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import Palette from "@/components/Palette";
 import ReactorGrid from "@/components/ReactorGrid";
 import StatsPanel from "@/components/StatsPanel";
 import HeatGraph from "@/components/HeatGraph";
 import AutoDesigner from "@/components/AutoDesigner";
-import Leaderboard from "@/components/Leaderboard";
 import { useLocalState } from "@/lib/useLocalState";
 import { simulate, makeGrid, widthFor } from "@/lib/simulator";
 import { tex } from "@/lib/info";
@@ -21,7 +21,14 @@ export default function Home() {
   const history = useRef([]);
 
   const width = widthFor(chambers, DATA);
-  const sim = useMemo(() => simulate(grid, chambers, DATA), [grid, chambers]);
+
+  // Simulate a beat after the last edit instead of on every paint stroke -
+  // dragging a row of vents stays smooth even on big reactors
+  const [sim, setSim] = useState(() => simulate(makeGrid(), 3, DATA));
+  useEffect(() => {
+    const t = setTimeout(() => setSim(simulate(grid, chambers, DATA)), 120);
+    return () => clearTimeout(t);
+  }, [grid, chambers]);
 
   const remember = (g) => {
     history.current.push(g);
@@ -109,18 +116,21 @@ export default function Home() {
             </button>
           ))}
           <button onClick={clear} className="mc-btn px-3 py-0.5 text-lg ml-2">Clear</button>
+          <Link href="/leaderboard" className="mc-btn px-3 py-0.5 text-lg">Leaderboard</Link>
         </div>
       </div>
 
       {/* Three columns, each with its own scrollbar on desktop */}
       <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-stretch flex-1 min-h-0">
-        <div className="w-full lg:w-72 shrink-0 lg:h-full lg:overflow-y-auto">
+        <div className="w-full lg:w-72 shrink-0 lg:h-full lg:overflow-y-auto overflow-x-hidden">
           <Palette data={DATA} tool={tool} pick={setTool} />
         </div>
 
         {/* Reactor + timeline */}
-        <div className="flex flex-col gap-3 items-start min-w-0 flex-1 lg:h-full lg:overflow-y-auto">
-          <ReactorGrid data={DATA} grid={grid} width={width} snapshot={snapshot} paint={paint} peaks={sim.slotPeaks} />
+        <div className="flex flex-col gap-3 min-w-0 flex-1 lg:h-full lg:overflow-y-auto overflow-x-hidden">
+          <div className="w-full flex justify-center">
+            <ReactorGrid data={DATA} grid={grid} width={width} snapshot={snapshot} paint={paint} peaks={sim.slotPeaks} />
+          </div>
 
           <div className="mc-panel p-2 w-full flex items-center gap-2">
             <button onClick={() => setPlaying((p) => !p)} className="mc-btn w-10 py-1 text-lg">
@@ -152,19 +162,12 @@ export default function Home() {
               <span>Output: {snapshot.eu} EU/t</span>
             </div>
           )}
-
-          <p className="text-[#7a7a7a] text-base">
-            Component stats are data, not code - edit src/lib/components.json and the whole
-            planner follows. Ctrl+Z undoes. Not affiliated with IC2; textures belong to the
-            IC2 Classic team.
-          </p>
         </div>
 
         {/* Right column */}
-        <div className="flex flex-col gap-3 w-full lg:w-80 shrink-0 lg:h-full lg:overflow-y-auto">
+        <div className="flex flex-col gap-3 w-full lg:w-80 shrink-0 lg:h-full lg:overflow-y-auto overflow-x-hidden">
           <StatsPanel sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
           <AutoDesigner data={DATA} grid={grid} chambers={chambers} apply={apply} />
-          <Leaderboard data={DATA} grid={grid} chambers={chambers} sim={sim} apply={apply} />
           <ShareCode grid={grid} chambers={chambers} apply={apply} />
         </div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 
 const W = 600;
 const H = 110;
@@ -8,12 +8,18 @@ const H = 110;
 export default function HeatGraph({ sim, cursor, scrub }) {
   const box = useRef(null);
 
-  if (!sim || sim.seconds < 1) return null;
+  // Downsampling 25k points per line is too slow to redo on every scrub tick
+  const paths = useMemo(() => {
+    if (!sim || sim.seconds < 1) return null;
+    const hullMax = Math.max(sim.maxHeatFinal, sim.maxHull, 1);
+    const euMax = Math.max(sim.maxEU, 1);
+    return {
+      hull: pathFor(sim.hullSeries, sim.seconds, hullMax),
+      eu: pathFor(sim.euSeries, sim.seconds, euMax),
+    };
+  }, [sim]);
 
-  const hullMax = Math.max(sim.maxHeatFinal, sim.maxHull, 1);
-  const euMax = Math.max(sim.maxEU, 1);
-  const hullPts = pathFor(sim.hullSeries, sim.seconds, hullMax);
-  const euPts = pathFor(sim.euSeries, sim.seconds, euMax);
+  if (!sim || sim.seconds < 1) return null;
   const snap = sim.snapshots[cursor];
   const cursorX = snap ? (snap.t / sim.seconds) * W : 0;
 
@@ -49,8 +55,8 @@ export default function HeatGraph({ sim, cursor, scrub }) {
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full block" preserveAspectRatio="none">
           {/* 85% fire line */}
           <line x1="0" x2={W} y1={H - 0.85 * H} y2={H - 0.85 * H} stroke="#663333" strokeDasharray="4 4" strokeWidth="1" />
-          <polyline points={euPts} fill="none" stroke="#e8c53f" strokeWidth="1.5" />
-          <polyline points={hullPts} fill="none" stroke="#e83f3f" strokeWidth="1.5" />
+          <polyline points={paths.eu} fill="none" stroke="#e8c53f" strokeWidth="1.5" />
+          <polyline points={paths.hull} fill="none" stroke="#e83f3f" strokeWidth="1.5" />
           <line x1={cursorX} x2={cursorX} y1="0" y2={H} stroke="#ffffff" strokeWidth="1" />
         </svg>
       </div>

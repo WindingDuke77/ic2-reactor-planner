@@ -1,8 +1,12 @@
 "use client";
 
+import { memo } from "react";
 import { fmt, fmtEU } from "@/lib/info";
 
-export default function StatsPanel({ sim, maxHeat, cells }) {
+// memo: stats only change when a new simulation lands, not on every scrub
+export default memo(StatsPanel);
+
+function StatsPanel({ sim, maxHeat, cells }) {
   if (!sim) return null;
 
   const verdict = sim.exploded

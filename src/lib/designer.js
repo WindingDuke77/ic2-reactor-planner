@@ -19,7 +19,7 @@ const KITS = [
 
 const GOALS = { eu: "most EU/t", total: "most total EU", efficiency: "best efficiency" };
 
-export function design(fuelId, count, mode, data, goal = "eu") {
+export function design(fuelId, count, mode, data, goal = "eu", armored = false) {
   const fuel = data.components[fuelId];
   if (!fuel || fuel.type !== "fuel" || count < 1) return null;
 
@@ -51,10 +51,32 @@ export function design(fuelId, count, mode, data, goal = "eu") {
         }
       }
     }
-    if (best) return best;
+    if (best) return armored ? armor(best, data) : best;
   }
 
   return bestFail; // nothing survived - hand back the least bad attempt, flagged
+}
+
+// Belt-and-braces mode: pack every leftover slot with Containment Reactor
+// Plating. Each plate multiplies a hypothetical blast by 0.9 and adds hull
+// headroom, so even sabotage barely dents the floor.
+function armor(candidate, data) {
+  const width = data.config.baseColumns + candidate.chambers;
+  const grid = [...candidate.grid];
+  let filled = false;
+  for (let y = 0; y < 6; y++) {
+    for (let x = 0; x < width; x++) {
+      const idx = y * 9 + x;
+      if (!grid[idx]) {
+        grid[idx] = "containment_reactor_plating";
+        filled = true;
+      }
+    }
+  }
+  if (!filled) return candidate;
+  const sim = simulate(grid, candidate.chambers, data);
+  if (!isStable(sim)) return candidate;
+  return { ...candidate, grid, sim, kit: `${candidate.kit} + containment plating` };
 }
 
 export function describe(result, fuelId, count, data) {
@@ -119,6 +141,7 @@ export const PRESETS = [
   { name: "Redstone Penny-Pincher", fuelId: "redstone_uranium_cell", count: 6, mode: "spread", goal: "efficiency" },
   { name: "Cuddle Puddle (paired)", fuelId: "uranium_cell", count: 8, mode: "paired", goal: "eu" },
   { name: "NetherStar Abomination", fuelId: "netherstar_uranium_quad_cell", count: 6, mode: "spread", goal: "total" },
+  { name: "Creeper-Proof Bunker", fuelId: "uranium_cell", count: 4, mode: "spread", goal: "eu", armored: true },
 ];
 
 // Cell placement. "spread" tries three passes, best first: "isolated" keeps

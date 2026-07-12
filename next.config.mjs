@@ -5,6 +5,7 @@ const basePath = process.env.GITHUB_PAGES === "true" ? "/ic2-reactor-planner" : 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
+  trailingSlash: true,
   basePath,
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath,

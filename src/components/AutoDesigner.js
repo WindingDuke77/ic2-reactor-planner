@@ -31,7 +31,7 @@ export default function AutoDesigner({ data, grid, chambers, apply }) {
     setCount(p.count);
     setMode(p.mode);
     setGoal(p.goal);
-    const result = design(p.fuelId, p.count, p.mode, data, p.goal);
+    const result = design(p.fuelId, p.count, p.mode, data, p.goal, p.armored);
     setNote(describe(result, p.fuelId, p.count, data));
     if (result) apply(result.grid, result.chambers);
   };
