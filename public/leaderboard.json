@@ -1,3 +1,14 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "name": "WindingDuke77",
+      "code": "WzEsNixbMzIsMzcsMzIsMzcsMzIsMzIsMzcsMzIsMzcsMjUsMzIsMzcsMzIsMjUsMjUsMzIsMzcsMzIsMzIsMzcsMzIsMjUsMiwyLDI1LDIwLDM3LDMyLDM3LDIwLDI1LDIsMiwyNSwzMiwzNywyNSwzMiwzNywzMiwyNSwyNSwzMiwzNywzMiwzMiwzNywzMiwzNywzMiwzMiwzNywzMiwzN11d",
+      "fuel": "uranium_quad_cell",
+      "cells": 4,
+      "euT": 378,
+      "totalEU": 75598400,
+      "chambers": 6,
+      "date": "2026-07-12"
+    }
+  ]
 }
