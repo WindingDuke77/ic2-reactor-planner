@@ -11,6 +11,7 @@ on:
 permissions:
   contents: write
   issues: write
+  actions: write
 
 # One submission at a time so two accepts never race the push
 concurrency:
@@ -63,6 +64,14 @@ jobs:
           git commit -m "leaderboard: add entry from issue #${{ github.event.issue.number }}"
           git pull --rebase origin master
           git push origin master
+
+      # Pushes made with GITHUB_TOKEN do not trigger the deploy workflow on
+      # their own (GitHub anti-recursion rule), so kick it explicitly
+      - name: Trigger site deploy
+        if: steps.result.outputs.accepted == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref master --repo ${{ github.repository }}
 
       - name: Comment and close (accepted)
         if: steps.result.outputs.accepted == 'true'
