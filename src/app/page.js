@@ -7,6 +7,8 @@ import ReactorGrid from "@/components/ReactorGrid";
 import StatsPanel from "@/components/StatsPanel";
 import HeatGraph from "@/components/HeatGraph";
 import AutoDesigner from "@/components/AutoDesigner";
+import CCDownload from "@/components/CCDownload";
+import EventLog from "@/components/EventLog";
 import { useLocalState } from "@/lib/useLocalState";
 import { simulate, makeGrid, widthFor } from "@/lib/simulator";
 import { tex } from "@/lib/info";
@@ -15,20 +17,22 @@ import DATA from "@/lib/components.json";
 export default function Home() {
   const [grid, setGrid] = useLocalState("ic2:grid", makeGrid());
   const [chambers, setChambers] = useLocalState("ic2:chambers", 3);
+  const [reactorType, setReactorType] = useLocalState("ic2:type", "eu");
   const [tool, setTool] = useState("uranium_cell");
   const [cursor, setCursor] = useState(0);
   const [playing, setPlaying] = useState(false);
   const history = useRef([]);
 
   const width = widthFor(chambers, DATA);
+  const steam = reactorType === "steam";
 
   // Simulate a beat after the last edit instead of on every paint stroke -
   // dragging a row of vents stays smooth even on big reactors
   const [sim, setSim] = useState(() => simulate(makeGrid(), 3, DATA));
   useEffect(() => {
-    const t = setTimeout(() => setSim(simulate(grid, chambers, DATA)), 120);
+    const t = setTimeout(() => setSim(simulate(grid, chambers, DATA, { steam })), 120);
     return () => clearTimeout(t);
-  }, [grid, chambers]);
+  }, [grid, chambers, steam]);
 
   const remember = (g) => {
     history.current.push(g);
@@ -108,7 +112,16 @@ export default function Home() {
         </span>
 
         <div className="ml-auto flex items-center gap-2">
-          <span className="text-[#5a5a5a] text-lg">Chambers:</span>
+          {[["eu", "EU"], ["steam", "Steam"]].map(([value, label]) => (
+            <button
+              key={value}
+              onClick={() => setReactorType(value)}
+              className={`mc-btn px-3 py-0.5 text-lg ${reactorType === value ? "mc-btn-active" : ""}`}
+            >
+              {label}
+            </button>
+          ))}
+          <span className="text-[#5a5a5a] text-lg ml-2">Chambers:</span>
           {[0, 1, 2, 3, 4, 5, 6].map((n) => (
             <button
               key={n}
@@ -133,13 +146,16 @@ export default function Home() {
         <div className="flex flex-col gap-3 min-w-0 flex-1 lg:h-full lg:overflow-y-auto overflow-x-hidden">
           <div className="flex flex-row gap-5">
 
-            <StatsPanel left sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
+            <StatsPanel left steam={steam} sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
 
             <div className="w-full flex justify-center">
               <ReactorGrid data={DATA} grid={grid} width={width} snapshot={snapshot} paint={paint} peaks={sim.slotPeaks} />
             </div>
 
-            <StatsPanel right sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
+            <div className="w-full flex flex-col gap-3">
+              <StatsPanel right steam={steam} sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
+              <EventLog events={sim.events} />
+            </div>
 
             
           </div>
@@ -166,13 +182,13 @@ export default function Home() {
           </div>
 
           <div className="w-full">
-            <HeatGraph sim={sim} cursor={cursor} scrub={(i) => { setPlaying(false); setCursor(i); }} />
+            <HeatGraph sim={sim} steam={steam} cursor={cursor} scrub={(i) => { setPlaying(false); setCursor(i); }} />
           </div>
 
-        
+
           <div className="mc-panel px-3 py-1 text-lg text-[#2a2a2a] flex gap-4">
             <span>Hull: {snapshot?.hull} / {snapshot?.maxHeat}</span>
-            <span>Output: {snapshot?.eu} EU/t</span>
+            <span>Output: {steam ? `${snapshot?.steam ?? 0} mB/t steam` : `${snapshot?.eu ?? 0} EU/t`}</span>
           </div>
         
 
@@ -183,6 +199,7 @@ export default function Home() {
         <div className="flex flex-col gap-3 w-full lg:w-80 shrink-0 lg:h-full lg:overflow-y-auto overflow-x-hidden">
           <AutoDesigner data={DATA} grid={grid} chambers={chambers} apply={apply} />
           <ShareCode grid={grid} chambers={chambers} apply={apply} />
+          <CCDownload />
         </div>
       </div>
     </div>

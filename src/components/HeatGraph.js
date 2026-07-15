@@ -5,19 +5,20 @@ import { useMemo, useRef } from "react";
 const W = 600;
 const H = 110;
 
-export default function HeatGraph({ sim, cursor, scrub }) {
+export default function HeatGraph({ sim, steam, cursor, scrub }) {
   const box = useRef(null);
 
   // Downsampling 25k points per line is too slow to redo on every scrub tick
   const paths = useMemo(() => {
     if (!sim || sim.seconds < 1) return null;
     const hullMax = Math.max(sim.maxHeatFinal, sim.maxHull, 1);
-    const euMax = Math.max(sim.maxEU, 1);
+    const out = steam ? sim.steamSeries || [] : sim.euSeries;
+    const outMax = Math.max(steam ? sim.maxSteam || 0 : sim.maxEU, 1);
     return {
       hull: pathFor(sim.hullSeries, sim.seconds, hullMax),
-      eu: pathFor(sim.euSeries, sim.seconds, euMax),
+      eu: pathFor(out, sim.seconds, outMax),
     };
-  }, [sim]);
+  }, [sim, steam]);
 
   if (!sim || sim.seconds < 1) return null;
   const snap = sim.snapshots[cursor];
@@ -48,7 +49,7 @@ export default function HeatGraph({ sim, cursor, scrub }) {
   return (
     <div className="mc-panel p-3">
       <div className="flex justify-between text-lg text-[#404040] leading-none mb-1">
-        <span><span className="text-[#b02020]">■</span> Hull heat <span className="ml-3 text-[#8f7a00]">■</span> EU/t</span>
+        <span><span className="text-[#b02020]">■</span> Hull heat <span className="ml-3 text-[#8f7a00]">■</span> {steam ? "Steam mB/t" : "EU/t"}</span>
         <span>{snap ? `t = ${snap.t}s` : ""}</span>
       </div>
       <div ref={box} onMouseDown={down} className="mc-inset cursor-crosshair">

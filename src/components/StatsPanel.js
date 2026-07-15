@@ -6,7 +6,7 @@ import { fmt, fmtEU } from "@/lib/info";
 // memo: stats only change when a new simulation lands, not on every scrub
 export default memo(StatsPanel);
 
-function StatsPanel({ sim, maxHeat, cells, left, right }) {
+function StatsPanel({ sim, maxHeat, cells, left, right, steam }) {
   if (!sim) return null;
 
   const verdict = sim.exploded
@@ -33,12 +33,21 @@ function StatsPanel({ sim, maxHeat, cells, left, right }) {
       )}
 
       <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-lg leading-tight">
-        {left && (
+        {left && !steam && (
           <>
             <Stat label="Avg output" value={`${sim.avgEU} EU/t`} />
             <Stat label="Peak output" value={`${sim.maxEU} EU/t`} />
             <Stat label="Total EU" value={fmtEU(sim.totalEU)} />
             <Stat label="EU/t per cell" value={cells > 0 ? `${Math.round(sim.avgEU / cells)}` : "-"} />
+          </>
+        )}
+
+        {left && steam && (
+          <>
+            <Stat label="Avg steam" value={`${sim.avgSteam || 0} mB/t`} />
+            <Stat label="Peak steam" value={`${sim.maxSteam || 0} mB/t`} />
+            <Stat label="Total steam" value={`${fmtEU(sim.totalSteam || 0)} mB`} />
+            <Stat label="Water used" value={`${fmtEU(sim.waterUsed || 0)} mB`} />
           </>
         )}
 
