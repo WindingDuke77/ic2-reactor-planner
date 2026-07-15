@@ -1,0 +1,94 @@
+{
+  "config": {
+    "rows": 6,
+    "baseColumns": 3,
+    "maxChambers": 6,
+    "baseMaxHeat": 10000,
+    "euPerOutputUnit": 5,
+    "baseExplosionPower": 10,
+    "explosionPowerMax": 45,
+    "maxSimSeconds": 25000,
+    "cooldownTicksMax": 3600
+  },
+  "components": {
+    "uranium_cell": { "name": "Uranium Cell", "category": "Fuel Cells", "texture": "uranium_cell.png", "type": "fuel", "rods": 1, "euPerPulse": 1, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 1, "explosionModifier": 2, "durability": 10000, "pulseArea": "orthogonal", "depletedProduct": "uranium_near_depleted" },
+    "uranium_dual_cell": { "name": "Dual Uranium Cell", "category": "Fuel Cells", "texture": "uranium_dual_cell.png", "type": "fuel", "rods": 2, "euPerPulse": 1, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 1, "explosionModifier": 2, "durability": 10000, "pulseArea": "orthogonal", "depletedProduct": "uranium_near_depleted" },
+    "uranium_quad_cell": { "name": "Quad Uranium Cell", "category": "Fuel Cells", "texture": "uranium_quad_cell.png", "type": "fuel", "rods": 4, "euPerPulse": 1, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 1, "explosionModifier": 2, "durability": 10000, "pulseArea": "orthogonal", "depletedProduct": "uranium_near_depleted" },
+    "redstone_uranium_cell": { "name": "Redstone Enriched Uranium Cell", "category": "Fuel Cells", "texture": "redstone_uranium_cell.png", "type": "fuel", "rods": 1, "euPerPulse": 1, "pulsesPerTick": 2, "pulsesForConnection": 1, "heatModifier": 0.5, "explosionModifier": 2, "durability": 8000, "pulseArea": "orthogonal", "depletedProduct": "redstone_near_depleted" },
+    "redstone_uranium_dual_cell": { "name": "Redstone Enriched Dual Uranium Cell", "category": "Fuel Cells", "texture": "redstone_uranium_dual_cell.png", "type": "fuel", "rods": 2, "euPerPulse": 1, "pulsesPerTick": 2, "pulsesForConnection": 1, "heatModifier": 0.5, "explosionModifier": 2, "durability": 8000, "pulseArea": "orthogonal", "depletedProduct": "redstone_near_depleted" },
+    "redstone_uranium_quad_cell": { "name": "Redstone Enriched Quad Uranium Cell", "category": "Fuel Cells", "texture": "redstone_uranium_quad_cell.png", "type": "fuel", "rods": 4, "euPerPulse": 1, "pulsesPerTick": 2, "pulsesForConnection": 1, "heatModifier": 0.5, "explosionModifier": 2, "durability": 8000, "pulseArea": "orthogonal", "depletedProduct": "redstone_near_depleted" },
+    "blaze_uranium_cell": { "name": "Blaze Enriched Uranium Cell", "category": "Fuel Cells", "texture": "blaze_uranium_cell.png", "type": "fuel", "rods": 1, "euPerPulse": 1, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 4, "explosionModifier": 6, "durability": 10000, "pulseArea": "orthogonal", "depletedProduct": "blaze_near_depleted" },
+    "blaze_uranium_dual_cell": { "name": "Blaze Enriched Dual Uranium Cell", "category": "Fuel Cells", "texture": "blaze_uranium_dual_cell.png", "type": "fuel", "rods": 2, "euPerPulse": 1, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 4, "explosionModifier": 6, "durability": 10000, "pulseArea": "orthogonal", "depletedProduct": "blaze_near_depleted" },
+    "blaze_uranium_quad_cell": { "name": "Blaze Enriched Quad Uranium Cell", "category": "Fuel Cells", "texture": "blaze_uranium_quad_cell.png", "type": "fuel", "rods": 4, "euPerPulse": 1, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 4, "explosionModifier": 6, "durability": 10000, "pulseArea": "orthogonal", "depletedProduct": "blaze_near_depleted" },
+    "enderpearl_uranium_cell": { "name": "EnderPearl Enriched Uranium Cell", "category": "Fuel Cells", "texture": "enderpearl_uranium_cell.png", "type": "fuel", "rods": 1, "euPerPulse": 1, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 1, "explosionModifier": 2, "durability": 5000, "pulseArea": "all8", "depletedProduct": "enderpearl_near_depleted" },
+    "enderpearl_uranium_dual_cell": { "name": "EnderPearl Enriched Dual Uranium Cell", "category": "Fuel Cells", "texture": "enderpearl_uranium_dual_cell.png", "type": "fuel", "rods": 2, "euPerPulse": 1, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 1, "explosionModifier": 2, "durability": 5000, "pulseArea": "all8", "depletedProduct": "enderpearl_near_depleted" },
+    "enderpearl_uranium_quad_cell": { "name": "EnderPearl Enriched Quad Uranium Cell", "category": "Fuel Cells", "texture": "enderpearl_uranium_quad_cell.png", "type": "fuel", "rods": 4, "euPerPulse": 1, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 1, "explosionModifier": 2, "durability": 5000, "pulseArea": "all8", "depletedProduct": "enderpearl_near_depleted" },
+    "netherstar_uranium_cell": { "name": "NetherStar Enriched Uranium Cell", "category": "Fuel Cells", "texture": "netherstar_uranium_cell.png", "type": "fuel", "rods": 1, "euPerPulse": 5, "pulsesPerTick": 2, "pulsesForConnection": 3, "heatModifier": 1.2, "explosionModifier": 2, "durability": 20000, "pulseArea": "orthogonal", "depletedProduct": "netherstar_near_depleted" },
+    "netherstar_uranium_dual_cell": { "name": "NetherStar Enriched Dual Uranium Cell", "category": "Fuel Cells", "texture": "netherstar_uranium_dual_cell.png", "type": "fuel", "rods": 2, "euPerPulse": 5, "pulsesPerTick": 2, "pulsesForConnection": 3, "heatModifier": 1.2, "explosionModifier": 2, "durability": 20000, "pulseArea": "orthogonal", "depletedProduct": "netherstar_near_depleted" },
+    "netherstar_uranium_quad_cell": { "name": "NetherStar Enriched Quad Uranium Cell", "category": "Fuel Cells", "texture": "netherstar_uranium_quad_cell.png", "type": "fuel", "rods": 4, "euPerPulse": 5, "pulsesPerTick": 2, "pulsesForConnection": 3, "heatModifier": 1.2, "explosionModifier": 2, "durability": 20000, "pulseArea": "orthogonal", "depletedProduct": "netherstar_near_depleted" },
+    "charcoal_uranium_cell": { "name": "Charcoal Enriched Uranium Cell", "category": "Fuel Cells", "texture": "charcoal_uranium_cell.png", "type": "fuel", "rods": 1, "euPerPulse": 0.6, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 1, "explosionModifier": 2, "durability": 15000, "pulseArea": "orthogonal", "depletedProduct": "charcoal_near_depleted" },
+    "charcoal_uranium_dual_cell": { "name": "Charcoal Enriched Dual Uranium Cell", "category": "Fuel Cells", "texture": "charcoal_uranium_dual_cell.png", "type": "fuel", "rods": 2, "euPerPulse": 0.6, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 1, "explosionModifier": 2, "durability": 15000, "pulseArea": "orthogonal", "depletedProduct": "charcoal_near_depleted" },
+    "charcoal_uranium_quad_cell": { "name": "Charcoal Enriched Quad Uranium Cell", "category": "Fuel Cells", "texture": "charcoal_uranium_quad_cell.png", "type": "fuel", "rods": 4, "euPerPulse": 0.6, "pulsesPerTick": 1, "pulsesForConnection": 1, "heatModifier": 1, "explosionModifier": 2, "durability": 15000, "pulseArea": "orthogonal", "depletedProduct": "charcoal_near_depleted" },
+
+    "coolant_cell_10k": { "name": "10k Coolant Cell", "category": "Coolant Cells", "texture": "coolant_cell_10k.png", "type": "coolant", "capacity": 10000 },
+    "coolant_cell_30k": { "name": "30k Coolant Cell", "category": "Coolant Cells", "texture": "coolant_cell_30k.png", "type": "coolant", "capacity": 30000 },
+    "coolant_cell_60k": { "name": "60k Coolant Cell", "category": "Coolant Cells", "texture": "coolant_cell_60k.png", "type": "coolant", "capacity": 60000 },
+
+    "heat_vent": { "name": "Heat Vent", "category": "Heat Vents", "texture": "heat_vent.png", "type": "vent", "selfVent": 6, "hullDraw": 0, "capacity": 1000, "electric": false },
+    "reactor_heat_vent": { "name": "Reactor Heat Vent", "category": "Heat Vents", "texture": "reactor_heat_vent.png", "type": "vent", "selfVent": 5, "hullDraw": 5, "capacity": 1000, "electric": false },
+    "overclocked_heat_vent": { "name": "Overclocked Heat Vent", "category": "Heat Vents", "texture": "overclocked_heat_vent.png", "type": "vent", "selfVent": 20, "hullDraw": 36, "capacity": 1000, "electric": false },
+    "advanced_heat_vent": { "name": "Advanced Heat Vent", "category": "Heat Vents", "texture": "advanced_heat_vent.png", "type": "vent", "selfVent": 12, "hullDraw": 0, "capacity": 1000, "electric": false },
+    "component_heat_vent": { "name": "Component Heat Vent", "category": "Heat Vents", "texture": "component_heat_vent.png", "type": "ventSpread", "cooling": 4 },
+
+    "steam_vent": { "name": "Steam Vent", "category": "Steam Vents", "texture": "steam_vent.png", "type": "vent", "selfVent": 6, "hullDraw": 0, "capacity": 1100, "electric": false, "steam": true },
+    "reactor_steam_vent": { "name": "Reactor Steam Vent", "category": "Steam Vents", "texture": "reactor_steam_vent.png", "type": "vent", "selfVent": 5, "hullDraw": 5, "capacity": 1100, "electric": false, "steam": true },
+    "overclocked_steam_vent": { "name": "Overclocked Steam Vent", "category": "Steam Vents", "texture": "overclocked_steam_vent.png", "type": "vent", "selfVent": 20, "hullDraw": 36, "capacity": 1100, "electric": false, "steam": true },
+    "advanced_steam_vent": { "name": "Advanced Steam Vent", "category": "Steam Vents", "texture": "advanced_steam_vent.png", "type": "vent", "selfVent": 12, "hullDraw": 0, "capacity": 1100, "electric": false, "steam": true },
+
+    "electric_heat_vent": { "name": "Electric Heat Vent", "category": "Electric Vents", "texture": "electric_heat_vent.png", "type": "vent", "selfVent": 12, "hullDraw": 0, "capacity": 10000, "electric": true },
+    "electric_reactor_heat_vent": { "name": "Electric Reactor Heat Vent", "category": "Electric Vents", "texture": "electric_reactor_heat_vent.png", "type": "vent", "selfVent": 10, "hullDraw": 10, "capacity": 10000, "electric": true },
+    "electric_overclocked_heat_vent": { "name": "Electric Overclocked Heat Vent", "category": "Electric Vents", "texture": "electric_overclocked_heat_vent.png", "type": "vent", "selfVent": 40, "hullDraw": 72, "capacity": 10000, "electric": true },
+    "electric_advanced_heat_vent": { "name": "Electric Advanced Heat Vent", "category": "Electric Vents", "texture": "electric_advanced_heat_vent.png", "type": "vent", "selfVent": 24, "hullDraw": 0, "capacity": 10000, "electric": true },
+
+    "heat_exchanger": { "name": "Heat Exchanger", "category": "Heat Exchangers", "texture": "heat_exchanger.png", "type": "exchanger", "capacity": 2500, "componentExchange": 12, "hullExchange": 4 },
+    "reactor_heat_exchanger": { "name": "Reactor Heat Exchanger", "category": "Heat Exchangers", "texture": "reactor_heat_exchanger.png", "type": "exchanger", "capacity": 5000, "componentExchange": 0, "hullExchange": 72 },
+    "component_heat_exchanger": { "name": "Component Heat Exchanger", "category": "Heat Exchangers", "texture": "component_heat_exchanger.png", "type": "exchanger", "capacity": 5000, "componentExchange": 36, "hullExchange": 0 },
+    "advanced_heat_exchanger": { "name": "Advanced Heat Exchanger", "category": "Heat Exchangers", "texture": "advanced_heat_exchanger.png", "type": "exchanger", "capacity": 10000, "componentExchange": 24, "hullExchange": 8 },
+
+    "rsh_condensator": { "name": "RSH-Condensator", "category": "Condensators", "texture": "rsh_condensator.png", "type": "condensator", "capacity": 20000 },
+    "lzh_condensator": { "name": "LZH-Condensator", "category": "Condensators", "texture": "lzh_condensator.png", "type": "condensator", "capacity": 100000 },
+
+    "reactor_plating": { "name": "Reactor Plating", "category": "Plating", "texture": "reactor_plating.png", "type": "plating", "maxHeatBonus": 1000, "hemModifier": 0.95 },
+    "heat_capacity_reactor_plating": { "name": "Heat-Capacity Reactor Plating", "category": "Plating", "texture": "heat_capacity_reactor_plating.png", "type": "plating", "maxHeatBonus": 2000, "hemModifier": 0.99 },
+    "containment_reactor_plating": { "name": "Containment Reactor Plating", "category": "Plating", "texture": "containment_reactor_plating.png", "type": "plating", "maxHeatBonus": 500, "hemModifier": 0.9 },
+
+    "neutron_reflector": { "name": "Neutron Reflector", "category": "Reflectors", "texture": "neutron_reflector.png", "type": "reflector", "durability": 10000, "iridium": false },
+    "thick_neutron_reflector": { "name": "Thick Neutron Reflector", "category": "Reflectors", "texture": "thick_neutron_reflector.png", "type": "reflector", "durability": 40000, "iridium": false },
+    "iridium_neutron_reflector": { "name": "Iridium Neutron Reflector", "category": "Reflectors", "texture": "iridium_neutron_reflector.png", "type": "reflector", "durability": 320000, "iridium": true },
+
+    "uranium_depleted_isotope": { "name": "Depleted Isotope Cell", "category": "Isotope Cells", "texture": "uranium_depleted_isotope_cell.png", "type": "depleted", "durability": 10000, "becomes": "uranium_re_enriched" },
+    "redstone_depleted_isotope": { "name": "Depleted Redstone Isotope Cell", "category": "Isotope Cells", "texture": "redstone_uranium_depleted_isotope_cell.png", "type": "depleted", "durability": 8000, "becomes": "redstone_re_enriched" },
+    "blaze_depleted_isotope": { "name": "Depleted Blaze Isotope Cell", "category": "Isotope Cells", "texture": "blaze_uranium_depleted_isotope_cell.png", "type": "depleted", "durability": 10000, "becomes": "blaze_re_enriched" },
+    "enderpearl_depleted_isotope": { "name": "Depleted EnderPearl Isotope Cell", "category": "Isotope Cells", "texture": "enderpearl_uranium_depleted_isotope_cell.png", "type": "depleted", "durability": 5000, "becomes": "enderpearl_re_enriched" },
+    "netherstar_depleted_isotope": { "name": "Depleted NetherStar Isotope Cell", "category": "Isotope Cells", "texture": "netherstar_uranium_depleted_isotope_cell.png", "type": "depleted", "durability": 20000, "becomes": "netherstar_re_enriched" },
+    "charcoal_depleted_isotope": { "name": "Depleted Charcoal Isotope Cell", "category": "Isotope Cells", "texture": "charcoal_uranium_depleted_isotope_cell.png", "type": "depleted", "durability": 15000, "becomes": "charcoal_re_enriched" },
+
+    "heating_cell": { "name": "Heating Cell", "category": "Misc", "texture": "heating_cell.png", "type": "heatingCell" },
+    "inactive_fuel_cell": { "name": "Inactive Fuel Cell", "category": "Misc", "texture": "inactive_fuel_cell.png", "type": "inactiveFuel", "durability": 2500, "becomes": "fuel_cell" }
+  },
+  "products": {
+    "uranium_near_depleted": { "name": "Near-depleted Uranium Cell", "texture": "uranium_near_depleted_cell.png" },
+    "redstone_near_depleted": { "name": "Near-depleted Redstone Uranium Cell", "texture": "redstone_uranium_near_depleted_cell.png" },
+    "blaze_near_depleted": { "name": "Near-depleted Blaze Uranium Cell", "texture": "blaze_uranium_near_depleted_cell.png" },
+    "enderpearl_near_depleted": { "name": "Near-depleted EnderPearl Uranium Cell", "texture": "enderpearl_uranium_near_depleted_cell.png" },
+    "netherstar_near_depleted": { "name": "Near-depleted NetherStar Uranium Cell", "texture": "netherstar_uranium_near_depleted_cell.png" },
+    "charcoal_near_depleted": { "name": "Near-depleted Charcoal Uranium Cell", "texture": "charcoal_uranium_near_depleted_cell.png" },
+    "uranium_re_enriched": { "name": "Re-Enriched Uranium Cell", "texture": "uranium_re_enriched_cell.png" },
+    "redstone_re_enriched": { "name": "Re-Enriched Redstone Uranium Cell", "texture": "redstone_uranium_re_enriched_cell.png" },
+    "blaze_re_enriched": { "name": "Re-Enriched Blaze Uranium Cell", "texture": "blaze_uranium_re_enriched_cell.png" },
+    "enderpearl_re_enriched": { "name": "Re-Enriched EnderPearl Uranium Cell", "texture": "enderpearl_uranium_re_enriched_cell.png" },
+    "netherstar_re_enriched": { "name": "Re-Enriched NetherStar Uranium Cell", "texture": "netherstar_uranium_re_enriched_cell.png" },
+    "charcoal_re_enriched": { "name": "Re-Enriched Charcoal Uranium Cell", "texture": "charcoal_uranium_re_enriched_cell.png" },
+    "fuel_cell": { "name": "Fuel Cell", "texture": "inactive_fuel_cell.png" }
+  }
+}

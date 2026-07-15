@@ -34,7 +34,7 @@ export default function Leaderboard({ data, grid, chambers, sim, apply }) {
   const load = (entry) => {
     try {
       const [v, ch, cells] = JSON.parse(atob(entry.code));
-      if (v !== 1 || !Array.isArray(cells) || cells.length !== 54) throw new Error();
+      if ((v !== 1 && v !== 2) || !Array.isArray(cells) || cells.length !== 54) throw new Error();
       const ids = Object.keys(data.components);
       apply(cells.map((i) => ids[i] || null), Math.max(0, Math.min(6, ch)));
     } catch {}

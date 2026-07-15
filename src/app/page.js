@@ -53,6 +53,22 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // A design can arrive in the URL (?d=<code>) from a shared link
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const shared = params.get("d") || params.get("code") || params.get("");
+      const design = shared && decodeDesign(shared);
+      if (design) {
+        setGrid(design.grid);
+        setChambers(design.chambers);
+        // Strip the query so a refresh does not reload it and the URL stays clean
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Editing the reactor rewinds the playback to the fresh grid
   useEffect(() => {
     setCursor(0);
@@ -211,24 +227,28 @@ function ShareCode({ grid, chambers, apply }) {
   const [msg, setMsg] = useState("");
 
   const copy = () => {
-    const ids = Object.keys(DATA.components);
-    const cells = grid.map((id) => (id ? ids.indexOf(id) : -1));
-    const out = btoa(JSON.stringify([1, chambers, cells]));
+    const out = encodeDesign(grid, chambers);
     setCode(out);
     try { navigator.clipboard.writeText(out); } catch {}
-    setMsg("Copied to clipboard.");
+    setMsg("Code copied - it carries the live stats for the turtle.");
+  };
+
+  const copyLink = () => {
+    const out = encodeDesign(grid, chambers);
+    const url = `${window.location.origin}${window.location.pathname}?d=${encodeURIComponent(out)}`;
+    setCode(out);
+    try { navigator.clipboard.writeText(url); } catch {}
+    setMsg("Share link copied - opens this exact design.");
   };
 
   const load = () => {
-    try {
-      const [v, ch, cells] = JSON.parse(atob(code.trim()));
-      if (v !== 1 || !Array.isArray(cells) || cells.length !== 54) throw new Error();
-      const ids = Object.keys(DATA.components);
-      apply(cells.map((i) => ids[i] || null), Math.max(0, Math.min(6, ch)));
-      setMsg("Loaded.");
-    } catch {
+    const design = decodeDesign(code);
+    if (!design) {
       setMsg("That code is not a reactor. It might be a creeper.");
+      return;
     }
+    apply(design.grid, design.chambers);
+    setMsg("Loaded.");
   };
 
   return (
@@ -241,13 +261,61 @@ function ShareCode({ grid, chambers, apply }) {
         className="mc-inset text-[#e0e0e0] text-base w-full p-1 mb-2"
         spellCheck={false}
       />
-      <div className="flex gap-2">
-        <button onClick={copy} className="mc-btn flex-1 py-1 text-lg">Copy current</button>
-        <button onClick={load} className="mc-btn flex-1 py-1 text-lg">Load</button>
+      <div className="flex gap-2 mb-2">
+        <button onClick={copy} className="mc-btn flex-1 py-1 text-lg">Copy code</button>
+        <button onClick={copyLink} className="mc-btn flex-1 py-1 text-lg">Copy link</button>
       </div>
+      <button onClick={load} className="mc-btn w-full py-1 text-lg">Load pasted code</button>
       {msg && <p className="text-[#2a2a2a] text-base mt-1">{msg}</p>}
     </div>
   );
+}
+
+// ---- design code: base64 of [version, chambers, cells, stats?] ----
+// v2 bakes in the planner's exact simulated stats so ComputerCraft (and
+// anything else) reads the same numbers the site shows, without re-simulating.
+const IDS = Object.keys(DATA.components);
+
+function buildStats(grid, chambers) {
+  const width = widthFor(chambers, DATA);
+  const sim = simulate(grid, chambers, DATA); // EU reactor - the code is a layout, mode-independent
+  let rods = 0, vents = 0, coolant = 0;
+  for (let y = 0; y < 6; y++) {
+    for (let x = 0; x < width; x++) {
+      const def = DATA.components[grid[y * 9 + x]];
+      if (!def) continue;
+      if (def.type === "fuel") rods++;
+      else if (def.type === "vent") vents++;
+      else if (def.type === "coolant") coolant++;
+    }
+  }
+  return {
+    ok: !sim.exploded && sim.destroyed === 0 && sim.maxHull < 4000,
+    verdict: sim.exploded ? "meltdown" : sim.destroyed > 0 ? "parts_lost" : sim.fireTicks > 0 ? "hot" : "stable",
+    euT: sim.avgEU, peakEU: sim.maxEU, totalEU: sim.totalEU,
+    seconds: sim.seconds, maxHull: sim.maxHull, maxHeat: sim.maxHeatFinal,
+    rodsDepleted: sim.rodsDepleted, partsLost: sim.destroyed,
+    explosion: sim.exploded ? Math.round(sim.explosionPower * 10) / 10 : 0,
+    chambers, rods, vents, coolant,
+  };
+}
+
+function encodeDesign(grid, chambers) {
+  const cells = grid.map((id) => (id ? IDS.indexOf(id) : -1));
+  return btoa(JSON.stringify([2, chambers, cells, buildStats(grid, chambers)]));
+}
+
+function decodeDesign(str) {
+  try {
+    const [v, ch, cells] = JSON.parse(atob(String(str).trim()));
+    if ((v !== 1 && v !== 2) || !Array.isArray(cells) || cells.length !== 54) return null;
+    return {
+      grid: cells.map((i) => IDS[i] || null),
+      chambers: Math.max(0, Math.min(6, ch | 0)),
+    };
+  } catch {
+    return null;
+  }
 }
 
 function countFuel(grid, width, data) {

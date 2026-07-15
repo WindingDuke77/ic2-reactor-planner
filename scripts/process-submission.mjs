@@ -45,7 +45,8 @@ async function run() {
   }
   if (!Array.isArray(decoded)) return reject("That code is not a reactor. It might be a creeper.");
   const [version, chambers, cells] = decoded;
-  if (version !== 1) return reject("Unknown design code version.");
+  // v1 = layout only, v2 = layout + baked stats (which we ignore and recompute)
+  if (version !== 1 && version !== 2) return reject("Unknown design code version.");
   if (!Number.isInteger(chambers) || chambers < 0 || chambers > 6) return reject("Chamber count out of range.");
   if (!Array.isArray(cells) || cells.length !== 54) return reject("A reactor grid has exactly 54 cells. This one does not.");
 
@@ -53,6 +54,10 @@ async function run() {
   const ids = Object.keys(data.components);
   // Same mapping the planner uses to load a code - unknown indices become empty slots
   const grid = cells.map((i) => (Number.isInteger(i) && ids[i]) || null);
+  // Store a canonical compact v1 code so the board stays tidy and dedupe is
+  // format-independent (v1 and v2 of the same layout collapse to one entry)
+  const canonCells = grid.map((id) => (id ? ids.indexOf(id) : -1));
+  const canonCode = Buffer.from(JSON.stringify([1, chambers, canonCells])).toString("base64");
 
   const { simulate } = await import("../src/lib/simulator.js");
   const sim = simulate(grid, chambers, data);
@@ -86,11 +91,11 @@ async function run() {
     board = { entries: [] };
   }
   const entries = Array.isArray(board.entries) ? board.entries : [];
-  if (entries.some((e) => e.code === code)) return reject("That exact design is already on the board.");
+  if (entries.some((e) => e.code === canonCode)) return reject("That exact design is already on the board.");
 
   entries.push({
     name,
-    code,
+    code: canonCode,
     fuel,
     cells: fuelCells,
     euT,
@@ -100,7 +105,7 @@ async function run() {
   });
   entries.sort((a, b) => b.euT - a.euT);
   const kept = entries.slice(0, MAX_ENTRIES);
-  if (!kept.some((e) => e.code === code)) {
+  if (!kept.some((e) => e.code === canonCode)) {
     return reject(`Valid and stable, but ${euT} EU/t does not crack the top ${MAX_ENTRIES}. Back to the drawing board.`);
   }
 
