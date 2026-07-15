@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
-const WGET = "wget https://windingduke77.github.io/ic2-reactor-planner/cc/installer.lua installer";
+const WGET = "wget run https://windingduke77.github.io/ic2-reactor-planner/cc/installer.lua";
 
 export default function CCDownload() {
   const [msg, setMsg] = useState("");
