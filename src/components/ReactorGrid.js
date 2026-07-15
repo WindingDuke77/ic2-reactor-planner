@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import HoverTip from "@/components/HoverTip";
 import { statLines, fmt, tex } from "@/lib/info";
 
 export default function ReactorGrid({ data, grid, width, snapshot, paint, peaks }) {
@@ -37,11 +38,23 @@ export default function ReactorGrid({ data, grid, width, snapshot, paint, peaks 
               const isProduct = live ? live.product : false;
 
               return (
-                <div
+                <HoverTip
                   key={x}
-                  onMouseDown={(e) => down(idx, e)}
-                  onMouseEnter={() => enter(idx)}
-                  className="mc-slot relative group w-12 h-12 flex items-center justify-center cursor-pointer"
+                  onDown={(e) => down(idx, e)}
+                  onEnter={() => enter(idx)}
+                  className="mc-slot relative w-12 h-12 flex items-center justify-center cursor-pointer"
+                  tip={
+                    def ? (
+                      <>
+                        <p className="text-white text-lg leading-tight">{def.name}</p>
+                        {live && !isProduct ? liveLines(live, def) : null}
+                        {!live && def.type ? statLines(def, data.config).map((line) => (
+                          <p key={line} className="text-[#a8a8a8] text-base leading-tight">{line}</p>
+                        )) : null}
+                        {isProduct ? <p className="text-[#a8a8a8] text-base">Spent product, does nothing</p> : null}
+                      </>
+                    ) : null
+                  }
                 >
                   {def && (
                     <img
@@ -59,18 +72,7 @@ export default function ReactorGrid({ data, grid, width, snapshot, paint, peaks 
                   {!live && def && def.capacity && peaks && peaks[idx] > 0 && (
                     <Bar frac={peaks[idx] / def.capacity} color="rgba(232,63,63,0.5)" />
                   )}
-
-                  {def && (
-                    <div className="mc-tooltip hidden group-hover:block absolute left-9 top-9 z-50 w-60 p-2 text-left pointer-events-none">
-                      <p className="text-white text-lg leading-tight">{def.name}</p>
-                      {live && !isProduct ? liveLines(live, def) : null}
-                      {!live && def.type ? statLines(def, data.config).map((line) => (
-                        <p key={line} className="text-[#a8a8a8] text-base leading-tight">{line}</p>
-                      )) : null}
-                      {isProduct ? <p className="text-[#a8a8a8] text-base">Spent product, does nothing</p> : null}
-                    </div>
-                  )}
-                </div>
+                </HoverTip>
               );
             })}
           </div>

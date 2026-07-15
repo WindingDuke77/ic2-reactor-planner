@@ -1,6 +1,7 @@
 "use client";
 
 import { memo } from "react";
+import HoverTip from "@/components/HoverTip";
 import { statLines, categories, tex } from "@/lib/info";
 
 // memo: the palette is 40+ tooltip-heavy buttons that never change during
@@ -24,23 +25,26 @@ function Palette({ data, tool, pick }) {
           <p className="text-[#404040] text-lg leading-none mb-1">{group.name}</p>
           <div className="flex flex-wrap gap-1">
             {group.items.map(({ id, def }) => (
-              <button
+              <HoverTip
                 key={id}
-                onClick={() => pick(id)}
-                className={`mc-slot relative group w-10 h-10 flex items-center justify-center cursor-pointer ${
-                  tool === id ? "mc-slot-selected" : ""
-                }`}
+                tip={
+                  <>
+                    <p className="text-white text-lg leading-tight">{def.name}</p>
+                    {statLines(def, data.config).map((line) => (
+                      <p key={line} className="text-[#a8a8a8] text-base leading-tight">{line}</p>
+                    ))}
+                  </>
+                }
               >
-                <img src={tex(def.texture)} alt={def.name} className="w-8 h-8 pixelated" draggable={false} />
-
-                {/* Minecraft-style hover tooltip */}
-                <div className="mc-tooltip hidden group-hover:block absolute left-1/2 -translate-x-1/2 top-10 z-50 w-56 p-2 text-left pointer-events-none">
-                  <p className="text-white text-lg leading-tight">{def.name}</p>
-                  {statLines(def, data.config).map((line) => (
-                    <p key={line} className="text-[#a8a8a8] text-base leading-tight">{line}</p>
-                  ))}
-                </div>
-              </button>
+                <button
+                  onClick={() => pick(id)}
+                  className={`mc-slot w-10 h-10 flex items-center justify-center cursor-pointer ${
+                    tool === id ? "mc-slot-selected" : ""
+                  }`}
+                >
+                  <img src={tex(def.texture)} alt={def.name} className="w-8 h-8 pixelated" draggable={false} />
+                </button>
+              </HoverTip>
             ))}
           </div>
         </div>

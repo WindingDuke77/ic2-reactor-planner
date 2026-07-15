@@ -160,22 +160,23 @@ export default function Home() {
 
         {/* Reactor + timeline */}
         <div className="flex flex-col gap-3 min-w-0 flex-1 lg:h-full lg:overflow-y-auto overflow-x-hidden">
-          <div className="flex flex-row gap-5">
-
+          {/* Below 2xl the center column is too narrow to flank the reactor,
+              so the two stat panels sit in a row above it instead. */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 2xl:hidden">
             <StatsPanel left steam={steam} sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
-
-            <div className="w-full flex justify-center">
-              <ReactorGrid data={DATA} grid={grid} width={width} snapshot={snapshot} paint={paint} peaks={sim.slotPeaks} />
-            </div>
-
-            <div className="w-full flex flex-col gap-3">
-              <StatsPanel right steam={steam} sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
-              <EventLog events={sim.events} />
-            </div>
-
-            
+            <StatsPanel right steam={steam} sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
           </div>
-          
+
+          <div className="flex justify-center items-start gap-3">
+            <div className="hidden 2xl:block w-56 shrink-0">
+              <StatsPanel left steam={steam} sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
+            </div>
+            <ReactorGrid data={DATA} grid={grid} width={width} snapshot={snapshot} paint={paint} peaks={sim.slotPeaks} />
+            <div className="hidden 2xl:block w-56 shrink-0">
+              <StatsPanel right steam={steam} sim={sim} maxHeat={sim.maxHeatFinal} cells={countFuel(grid, width, DATA)} />
+            </div>
+          </div>
+
 
           <div className="mc-panel p-2 w-full flex items-center gap-2">
             <button onClick={() => setPlaying((p) => !p)} className="mc-btn w-10 py-1 text-lg">
@@ -206,9 +207,8 @@ export default function Home() {
             <span>Hull: {snapshot?.hull} / {snapshot?.maxHeat}</span>
             <span>Output: {steam ? `${snapshot?.steam ?? 0} mB/t steam` : `${snapshot?.eu ?? 0} EU/t`}</span>
           </div>
-        
 
-
+          <EventLog events={sim.events} />
         </div>
 
         {/* Right column */}
